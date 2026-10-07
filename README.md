@@ -1,59 +1,72 @@
-# Supabase Vercel Health Check
+# Flask + Supabase + Vercel
 
-Dashboard sederhana untuk mengetes Supabase dari Vercel:
-- Environment variables
-- PostgreSQL/database query
-- Supabase Auth
-- Supabase Storage
+Website Flask sederhana untuk menambahkan data nama dan email ke tabel `users` di Supabase.
 
-## 1. Siapkan database
+## Struktur
 
-Buka Supabase > SQL Editor, lalu jalankan isi `supabase-test.sql`.
+- `api/index.py` - aplikasi Flask
+- `templates/index.html` - form HTML
+- `requirements.txt` - dependency Python
+- `vercel.json` - konfigurasi Vercel
+- `supabase.sql` - SQL untuk membuat tabel
+- `.env.example` - contoh environment variable
 
-## 2. Environment variables
+## Setup Supabase
 
-Di Vercel > Project > Settings > Environment Variables tambahkan:
+1. Buka Supabase.
+2. Masuk ke SQL Editor.
+3. Jalankan isi `supabase.sql`.
 
-`SUPABASE_URL`
-`SUPABASE_SERVICE_ROLE_KEY`
+## Lokal
 
-Jangan commit service role key ke GitHub dan jangan expose key ini di frontend.
-
-## 3. Deploy
-
-Hubungkan repository ke Vercel atau gunakan:
+Buat virtual environment:
 
 ```bash
-vercel
-vercel --prod
+python -m venv venv
 ```
 
-Setelah deploy buka:
+Aktifkan:
 
-`https://PROJECT.vercel.app/`
+Windows:
+```bash
+venv\Scripts\activate
+```
 
-Endpoint JSON:
+Linux/macOS:
+```bash
+source venv/bin/activate
+```
 
-`https://PROJECT.vercel.app/api/health`
+Install dependency:
 
-## 4. Local test
+```bash
+pip install -r requirements.txt
+```
 
-Buat virtual environment, install dependency, lalu set environment variables.
+Salin `.env.example` menjadi `.env`, lalu isi:
 
-Windows PowerShell:
+```env
+SUPABASE_URL=https://YOUR_PROJECT.supabase.co
+SUPABASE_KEY=YOUR_SUPABASE_KEY
+```
 
-```powershell
-$env:SUPABASE_URL="https://YOUR_PROJECT.supabase.co"
-$env:SUPABASE_SERVICE_ROLE_KEY="YOUR_SERVICE_ROLE_KEY"
+Jalankan:
+
+```bash
 python api/index.py
 ```
 
-macOS/Linux:
+Buka `http://127.0.0.1:5000`.
 
-```bash
-export SUPABASE_URL="https://YOUR_PROJECT.supabase.co"
-export SUPABASE_SERVICE_ROLE_KEY="YOUR_SERVICE_ROLE_KEY"
-python api/index.py
-```
+## Deploy ke Vercel
 
-Buka http://localhost:5000
+Push project ke GitHub lalu import repository tersebut ke Vercel.
+
+Di Vercel, tambahkan Environment Variables:
+
+- `SUPABASE_URL`
+- `SUPABASE_KEY`
+
+Jangan commit file `.env` atau membagikan key rahasia.
+
+Untuk backend, gunakan key Supabase yang sesuai untuk server-side access dan jangan menaruh secret key di HTML/JavaScript browser.
