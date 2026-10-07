@@ -9,7 +9,7 @@ try:
 except ImportError:
     create_client = None
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder='static', static_url_path='/static', template_folder='templates')
 app.secret_key = os.getenv('FLASK_SECRET_KEY', 'dev-only-change-this-secret-before-deploying')
 app.config['MAX_CONTENT_LENGTH'] = 1 * 1024 * 1024
 app.config['SESSION_COOKIE_HTTPONLY'] = True
