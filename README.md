@@ -1,143 +1,52 @@
-# CRUD Flask + Supabase + Vercel
+# CRUD Flask + Supabase Auth + Admin Approval + Vercel
 
-Template CRUD sederhana menggunakan:
+Alur:
+1. User register/login.
+2. Hanya user login yang dapat CRUD.
+3. Data baru berstatus `pending`.
+4. Data pending/rejected tidak tampil di halaman umum.
+5. Admin membuka `/admin` untuk approve/reject.
+6. Hanya `approved` yang tampil.
+7. Jika user mengedit data approved, status kembali `pending`.
+8. Admin dapat mengedit tanpa mengubah status.
 
-- Python Flask
-- Supabase sebagai database PostgreSQL melalui Supabase Python client
-- Vercel Python runtime
-- HTML + CSS tanpa framework frontend
+## Supabase
+Jalankan `supabase/schema.sql` di SQL Editor.
 
-## 1. Buat database Supabase
+Aktifkan Authentication > Providers > Email.
 
-1. Buat project di Supabase.
-2. Buka **SQL Editor**.
-3. Jalankan isi `supabase/schema.sql`.
-4. Buka **Project Settings > API**.
-5. Salin:
-   - Project URL
-   - anon/public key
-
-> Jangan masukkan `service_role` key ke frontend. Untuk aplikasi production, gunakan arsitektur dan RLS yang sesuai kebutuhan keamanan Anda.
-
-## 2. Jalankan lokal
-
-Buat virtual environment:
-
-```bash
-python -m venv .venv
+Setelah register akun yang akan menjadi admin, jalankan:
+```sql
+update public.profiles set role='admin'
+where email='admin@example.com';
 ```
 
-Aktifkan:
-
-Windows:
-```bash
-.venv\Scripts\activate
-```
-
-macOS/Linux:
-```bash
-source .venv/bin/activate
-```
-
-Install dependency:
-
-```bash
-pip install -r requirements.txt
-```
-
-Salin `.env.example` menjadi `.env`, lalu isi:
-
+## Environment
 ```env
 SUPABASE_URL=https://your-project.supabase.co
 SUPABASE_KEY=your-supabase-anon-key
-FLASK_SECRET_KEY=ganti-dengan-secret-random
+SUPABASE_SERVICE_ROLE_KEY=your-supabase-service-role-key
+FLASK_SECRET_KEY=long-random-secret
 ```
 
-Jalankan:
+`SUPABASE_SERVICE_ROLE_KEY` hanya boleh berada di server/Vercel Environment Variables. Jangan masukkan ke frontend atau GitHub.
 
+## Lokal
 ```bash
+python -m venv .venv
+# Windows: .venv\Scripts\activate
+# macOS/Linux: source .venv/bin/activate
+pip install -r requirements.txt
 flask --app app run --debug
 ```
 
-Buka `http://127.0.0.1:5000`.
+## Vercel
+Import repository ke Vercel dan tambahkan ke Environment Variables:
+- SUPABASE_URL
+- SUPABASE_KEY
+- SUPABASE_SERVICE_ROLE_KEY
+- FLASK_SECRET_KEY
 
-## 3. Deploy ke Vercel
+Kemudian deploy. `vercel.json` dan `api/index.py` sudah disiapkan.
 
-### Opsi A — GitHub
-
-1. Upload project ini ke repository GitHub.
-2. Login ke Vercel.
-3. Pilih **Add New > Project**.
-4. Import repository.
-5. Deploy.
-6. Setelah project dibuat, buka **Settings > Environment Variables**.
-7. Tambahkan:
-   - `SUPABASE_URL`
-   - `SUPABASE_KEY`
-   - `FLASK_SECRET_KEY`
-8. Redeploy.
-
-`vercel.json` dan `api/index.py` sudah disiapkan untuk Flask.
-
-### Opsi B — Vercel CLI
-
-Install CLI:
-
-```bash
-npm i -g vercel
-```
-
-Login:
-
-```bash
-vercel login
-```
-
-Dari folder project:
-
-```bash
-vercel
-```
-
-Tambahkan environment variables melalui dashboard Vercel atau CLI, lalu deploy production:
-
-```bash
-vercel --prod
-```
-
-## 4. Struktur project
-
-```text
-flask-supabase-vercel-crud/
-├── api/
-│   └── index.py
-├── static/
-│   └── style.css
-├── templates/
-│   ├── base.html
-│   ├── index.html
-│   └── edit.html
-├── supabase/
-│   └── schema.sql
-├── .env.example
-├── .gitignore
-├── app.py
-├── requirements.txt
-├── vercel.json
-└── README.md
-```
-
-## 5. Fitur
-
-- Create data
-- Read/list data
-- Update data
-- Delete data
-- Flash message
-- Health check di `/health`
-- Responsive sederhana
-- Siap untuk deployment serverless Vercel
-
-## Catatan keamanan
-
-Contoh SQL mengaktifkan policy publik agar template mudah diuji. Untuk aplikasi production, jangan membuka operasi CRUD ke role `anon` tanpa autentikasi/otorisasi yang tepat. Gunakan Supabase Auth dan Row Level Security (RLS) sesuai kebutuhan aplikasi.
+Untuk production, pertimbangkan CSRF protection, rate limiting, audit log, pagination, email verification, password reset, dan RLS yang lebih granular.
