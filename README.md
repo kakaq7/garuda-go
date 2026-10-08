@@ -1,52 +1,106 @@
-# CRUD Flask + Supabase Auth + Admin Approval + Vercel
+# SIPPS Indonesia
 
-Alur:
-1. User register/login.
-2. Hanya user login yang dapat CRUD.
-3. Data baru berstatus `pending`.
-4. Data pending/rejected tidak tampil di halaman umum.
-5. Admin membuka `/admin` untuk approve/reject.
-6. Hanya `approved` yang tampil.
-7. Jika user mengedit data approved, status kembali `pending`.
-8. Admin dapat mengedit tanpa mengubah status.
+**Sistem Informasi Pembinaan Pemain Sepakbola dari Usia Dini hingga Senior di Indonesia.**
 
-## Supabase
-Jalankan `supabase/schema.sql` di SQL Editor.
+Aplikasi Flask + Supabase yang dirancang sebagai platform kolaboratif: masyarakat dapat mengusulkan data pemain, sementara admin melakukan verifikasi sebelum data tampil secara publik.
 
-Aktifkan Authentication > Providers > Email.
+## Fitur utama
 
-Setelah register akun yang akan menjadi admin, jalankan:
+- Landing page modern dan responsif.
+- Direktori pemain terverifikasi.
+- Pencarian berdasarkan nama/kota/klub.
+- Filter provinsi, posisi, dan kelompok usia.
+- Halaman profil pemain.
+- Register/login melalui Supabase Auth.
+- Form kontribusi masyarakat.
+- Riwayat status kontribusi pengguna.
+- Moderasi admin: verifikasi / tolak + alasan.
+- API health check.
+- Supabase Row Level Security (RLS).
+- Vercel-ready dengan Python serverless function.
+- Service-role key hanya dipakai server-side untuk operasi admin.
+
+## 1. Supabase
+
+Buat project di Supabase, lalu buka **SQL Editor** dan jalankan isi `schema.sql`.
+
+Setelah akun admin pertama dibuat melalui `/register`, ambil UUID user dari Supabase Dashboard > Authentication > Users, lalu jalankan:
+
 ```sql
-update public.profiles set role='admin'
-where email='admin@example.com';
+update public.profiles
+set is_admin = true
+where id = 'UUID-USER-ADMIN';
 ```
 
-## Environment
-```env
-SUPABASE_URL=https://your-project.supabase.co
-SUPABASE_KEY=your-supabase-anon-key
-SUPABASE_SERVICE_ROLE_KEY=your-supabase-service-role-key
-FLASK_SECRET_KEY=long-random-secret
-```
+### Auth email
 
-`SUPABASE_SERVICE_ROLE_KEY` hanya boleh berada di server/Vercel Environment Variables. Jangan masukkan ke frontend atau GitHub.
+Jika ingin pengguna melakukan verifikasi email, aktifkan Email provider dan pengaturan email confirmation di Supabase Auth. URL redirect produksi sebaiknya diarahkan ke domain Vercel Anda.
 
-## Lokal
+## 2. Environment Variables
+
+Di Vercel > Project > Settings > Environment Variables, tambahkan:
+
+- `SUPABASE_URL`
+- `SUPABASE_KEY`
+- `SUPABASE_SERVICE_ROLE_KEY`
+- `FLASK_SECRET_KEY`
+
+Semua variabel ini dapat diset untuk Production/Preview/Development sesuai kebutuhan.
+
+**Jangan pernah menaruh `SUPABASE_SERVICE_ROLE_KEY` di JavaScript frontend, HTML, atau repository publik.**
+
+## 3. Local development
+
 ```bash
 python -m venv .venv
-# Windows: .venv\Scripts\activate
-# macOS/Linux: source .venv/bin/activate
+source .venv/bin/activate
 pip install -r requirements.txt
+cp .env.example .env
+```
+
+Isi `.env`, kemudian jalankan:
+
+```bash
 flask --app app run --debug
 ```
 
-## Vercel
-Import repository ke Vercel dan tambahkan ke Environment Variables:
-- SUPABASE_URL
-- SUPABASE_KEY
-- SUPABASE_SERVICE_ROLE_KEY
-- FLASK_SECRET_KEY
+Windows:
 
-Kemudian deploy. `vercel.json` dan `api/index.py` sudah disiapkan.
+```powershell
+.venv\Scripts\activate
+flask --app app run --debug
+```
 
-Untuk production, pertimbangkan CSRF protection, rate limiting, audit log, pagination, email verification, password reset, dan RLS yang lebih granular.
+## 4. Deploy ke Vercel
+
+Push project ke GitHub/GitLab, import repository ke Vercel, lalu pastikan environment variables sudah diisi.
+
+Vercel akan menggunakan:
+
+```text
+api/index.py
+```
+
+sebagai entry point Python.
+
+## Catatan arsitektur
+
+- Browser -> Flask/Vercel -> Supabase.
+- Supabase Auth menangani akun pengguna.
+- Data publik hanya `status = verified`.
+- Kontribusi masyarakat masuk sebagai `pending`.
+- Admin menggunakan `SUPABASE_SERVICE_ROLE_KEY` dari server untuk moderasi.
+- RLS tetap diaktifkan untuk tabel Supabase.
+
+## Pengembangan lanjutan yang direkomendasikan
+
+1. Upload foto melalui Supabase Storage, bukan URL manual.
+2. Sistem audit log untuk setiap tindakan admin.
+3. Role `moderator` selain `admin`.
+4. Dashboard statistik pembinaan nasional.
+5. Peta sebaran pemain per provinsi.
+6. Import data massal CSV oleh admin.
+7. Sistem laporan/koreksi data oleh masyarakat.
+8. Notifikasi email ketika kontribusi diverifikasi/ditolak.
+9. Verifikasi sumber berlapis untuk data sensitif.
+10. Pagination server-side untuk direktori besar.
