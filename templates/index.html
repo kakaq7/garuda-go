@@ -1,1 +1,48 @@
+{% extends "base.html" %}
+{% block title %}SIPPS Indonesia — Pusat Data Pembinaan Sepakbola{% endblock %}
+{% block content %}
+<section class="hero">
+  <div class="container hero-grid">
+    <div>
+      <span class="eyebrow">⚽ DATA · PEMBINAAN · KOLABORASI</span>
+      <h1>Membangun masa depan sepakbola Indonesia <em>bersama.</em></h1>
+      <p class="hero-copy">Satu ruang terbuka untuk menemukan, mendokumentasikan, dan memverifikasi talenta sepakbola Indonesia dari usia dini hingga senior.</p>
+      <div class="hero-actions">
+        <a class="btn" href="{{ url_for('players') }}">Jelajahi pemain <span>→</span></a>
+        <a class="btn btn-ghost" href="{{ url_for('contribute') }}">+ Tambahkan data</a>
+      </div>
+      <div class="trust-row"><span>✓ Terverifikasi admin</span><span>✓ Kontribusi masyarakat</span><span>✓ Nasional</span></div>
+    </div>
+    <div class="hero-card">
+      <div class="pitch">
+        <div class="pitch-line center"></div><div class="pitch-line box top"></div><div class="pitch-line box bottom"></div>
+        <div class="ball">⚽</div>
+        <div class="pitch-stat"><small>EKOSISTEM DATA</small><strong>01</strong><span>Platform kolaboratif</span></div>
+      </div>
+    </div>
+  </div>
+</section>
 
+<section class="section">
+  <div class="container">
+    <div class="section-head"><div><span class="eyebrow">DIREKTORI TERBARU</span><h2>Talenta yang sudah terverifikasi</h2></div><a class="text-link" href="{{ url_for('players') }}">Lihat semua →</a></div>
+    {% if players %}
+    <div class="player-grid">
+      {% for p in players %}
+      <a class="player-card" href="{{ url_for('player_detail', slug=p.slug) }}">
+        <div class="avatar">{% if p.photo_url %}<img src="{{ p.photo_url }}" alt="{{ p.full_name }}">{% else %}<span>{{ p.full_name[:1] }}</span>{% endif %}</div>
+        <div class="player-info"><span class="tag">{{ p.age_group }}</span><h3>{{ p.full_name }}</h3><p>{{ p.position }} · {{ p.province }}</p>{% if p.club_name %}<small>{{ p.club_name }}</small>{% endif %}</div>
+        <span class="arrow">↗</span>
+      </a>
+      {% endfor %}
+    </div>
+    {% else %}
+      <div class="empty">Belum ada data pemain terverifikasi. Jadilah kontributor pertama.</div>
+    {% endif %}
+  </div>
+</section>
+
+<section class="cta-band">
+  <div class="container cta-inner"><div><span class="eyebrow">PUNYA INFORMASI?</span><h2>Setiap talenta layak untuk ditemukan.</h2><p>Kontribusikan data pemain, akademi, atau informasi pembinaan yang Anda ketahui.</p></div><a class="btn btn-light" href="{{ url_for('contribute') }}">Mulai berkontribusi →</a></div>
+</section>
+{% endblock %}

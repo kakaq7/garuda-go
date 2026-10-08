@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="SIPPS Indonesia — Sistem Informasi Pembinaan Pemain Sepakbola Indonesia.">
+  <title>{% block title %}SIPPS Indonesia{% endblock %}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/app.css') }}">
+</head>
+<body>
+  <header class="nav-wrap">
+    <nav class="nav container">
+      <a class="brand" href="{{ url_for('index') }}">
+        <span class="brand-mark">S</span>
+        <span>SIPPS<span class="brand-muted">.ID</span></span>
+      </a>
+      <button class="menu-btn" aria-label="Buka menu" onclick="document.body.classList.toggle('menu-open')">☰</button>
+      <div class="nav-links">
+        <a href="{{ url_for('players') }}">Direktori Pemain</a>
+        <a href="{{ url_for('about') }}">Tentang</a>
+        {% if current_user %}
+          <a href="{{ url_for('contribute') }}">+ Kontribusi</a>
+          <a href="{{ url_for('my_contributions') }}">Kontribusi Saya</a>
+          {% if current_user.is_admin %}<a href="{{ url_for('admin_dashboard') }}" class="admin-link">Admin</a>{% endif %}
+          <span class="user-chip">{{ current_user.display_name }}</span>
+          <a href="{{ url_for('logout') }}">Keluar</a>
+        {% else %}
+          <a href="{{ url_for('login') }}">Masuk</a>
+          <a class="btn btn-small" href="{{ url_for('register') }}">Daftar</a>
+        {% endif %}
+      </div>
+    </nav>
+  </header>
+
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      <div class="container flash-stack">
+        {% for category, message in messages %}
+          <div class="flash {{ category }}">{{ message }}</div>
+        {% endfor %}
+      </div>
+    {% endif %}
+  {% endwith %}
+
+  <main>{% block content %}{% endblock %}</main>
+
+  <footer>
+    <div class="container footer-grid">
+      <div>
+        <div class="brand footer-brand"><span class="brand-mark">S</span><span>SIPPS<span class="brand-muted">.ID</span></span></div>
+        <p>Kolaborasi data untuk membangun ekosistem pembinaan sepakbola Indonesia yang lebih terhubung.</p>
+      </div>
+      <div><strong>Jelajahi</strong><a href="{{ url_for('players') }}">Direktori</a><a href="{{ url_for('about') }}">Tentang SIPPS</a></div>
+      <div><strong>Kontribusi</strong><a href="{{ url_for('contribute') }}">Tambahkan Data</a><a href="{{ url_for('register') }}">Buat Akun</a></div>
+    </div>
+    <div class="container footer-bottom">© 2026 SIPPS Indonesia · Data publik ditampilkan setelah proses verifikasi.</div>
+  </footer>
+</body>
+</html>

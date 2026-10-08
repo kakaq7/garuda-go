@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block title %}Direktori Pemain — SIPPS Indonesia{% endblock %}
+{% block content %}
+<section class="page-hero"><div class="container"><span class="eyebrow">DIREKTORI NASIONAL</span><h1>Temukan pemain.</h1><p>Data pemain yang telah melewati proses verifikasi admin.</p></div></section>
+<section class="section">
+<div class="container">
+<form class="filter-box" method="get">
+  <input name="q" value="{{ filters.q }}" placeholder="Cari nama, kota, atau klub…">
+  <select name="age_group"><option value="">Semua usia</option>{% for x in ['U-8','U-10','U-12','U-14','U-16','U-18','U-20','Senior'] %}<option {% if filters.age_group==x %}selected{% endif %}>{{x}}</option>{% endfor %}</select>
+  <select name="position"><option value="">Semua posisi</option>{% for x in ['Kiper','Bek','Gelandang','Penyerang'] %}<option {% if filters.position==x %}selected{% endif %}>{{x}}</option>{% endfor %}</select>
+  <input name="province" value="{{ filters.province }}" placeholder="Provinsi">
+  <button class="btn" type="submit">Cari</button>
+</form>
+<div class="result-meta">{{ players|length }} pemain ditampilkan</div>
+<div class="player-grid">
+{% for p in players %}
+<a class="player-card" href="{{ url_for('player_detail', slug=p.slug) }}"><div class="avatar">{% if p.photo_url %}<img src="{{p.photo_url}}" alt="{{p.full_name}}">{% else %}<span>{{p.full_name[:1]}}</span>{% endif %}</div><div class="player-info"><span class="tag">{{p.age_group}}</span><h3>{{p.full_name}}</h3><p>{{p.position}} · {{p.province}}</p>{% if p.club_name %}<small>{{p.club_name}}</small>{% endif %}</div><span class="arrow">↗</span></a>
+{% else %}<div class="empty">Tidak menemukan pemain dengan filter tersebut.</div>{% endfor %}
+</div></div></section>
+{% endblock %}

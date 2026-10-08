@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %}Tambah Kontribusi — SIPPS Indonesia{% endblock %}
+{% block content %}
+<section class="page-hero"><div class="container"><span class="eyebrow">KONTRIBUSI MASYARAKAT</span><h1>Tambahkan data pemain.</h1><p>Semua kiriman akan diperiksa admin sebelum ditampilkan kepada publik.</p></div></section>
+<section class="section"><div class="container form-layout"><div class="form-card"><form method="post">
+<div class="form-grid"><label>Nama pemain *<input name="full_name" value="{{form.get('full_name','')}}" required></label><label>Tahun lahir<input type="number" name="birth_year" min="1900" max="2100" value="{{form.get('birth_year','')}}"></label>
+<label>Kelompok usia *<select name="age_group" required><option value="">Pilih</option>{% for x in ['U-8','U-10','U-12','U-14','U-16','U-18','U-20','Senior'] %}<option {% if form.get('age_group')==x %}selected{% endif %}>{{x}}</option>{% endfor %}</select></label>
+<label>Posisi *<select name="position" required><option value="">Pilih</option>{% for x in ['Kiper','Bek','Gelandang','Penyerang'] %}<option {% if form.get('position')==x %}selected{% endif %}>{{x}}</option>{% endfor %}</select></label>
+<label>Kota/Kabupaten<input name="city" value="{{form.get('city','')}}"></label><label>Provinsi *<input name="province" value="{{form.get('province','')}}" required></label>
+<label>Klub/Akademi<input name="club_name" value="{{form.get('club_name','')}}"></label><label>URL foto publik<input type="url" name="photo_url" value="{{form.get('photo_url','')}}" placeholder="https://…"></label>
+<label class="wide">Biografi singkat<textarea name="short_bio" rows="4">{{form.get('short_bio','')}}</textarea></label>
+<label class="wide">Sumber informasi / referensi<input type="url" name="source_url" value="{{form.get('source_url','')}}" placeholder="https://…"></label>
+<label class="wide">Catatan verifikasi untuk admin *<textarea name="evidence_notes" rows="5" required placeholder="Jelaskan dari mana data diperoleh, hubungan Anda dengan sumber, atau bukti yang relevan.">{{form.get('evidence_notes','')}}</textarea></label>
+</div><button class="btn" type="submit">Kirim untuk verifikasi →</button></form></div>
+<aside class="side-note"><span class="eyebrow">PROSES</span><ol><li><b>Kirim</b><span>Isi informasi seakurat mungkin.</span></li><li><b>Verifikasi</b><span>Admin memeriksa sumber dan kelengkapan.</span></li><li><b>Publik</b><span>Data terverifikasi masuk direktori nasional.</span></li></ol><p>Mohon jangan mengirim data pribadi sensitif yang tidak diperlukan.</p></aside></div></section>
+{% endblock %}
