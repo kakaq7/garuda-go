@@ -1,39 +1,44 @@
--- Jalankan di Supabase Dashboard > SQL Editor.
--- Backend Flask mengakses Supabase dari server, bukan dari browser.
+-- Garuda Talenta - Supabase schema
 create extension if not exists pgcrypto;
 
 create table if not exists public.players (
   id uuid primary key default gen_random_uuid(),
-  name text not null check (char_length(name) between 1 and 120),
-  age integer not null check (age between 8 and 45),
-  birth_year integer,
+  name text not null,
+  birth_date date,
+  age_group text,
   position text,
   club text,
   province text,
-  stage text,
-  summary text not null check (char_length(summary) between 30 and 3000),
+  city text,
+  photo_url text,
+  bio text,
   source_name text,
   source_url text,
-  submitter_email text,
-  consent boolean not null default false,
-  status text not null default 'pending' check (status in ('pending','published','rejected')),
-  review_note text,
-  reviewed_at timestamptz,
-  created_at timestamptz not null default now()
+  status text not null default 'pending'
+    check (status in ('pending','published','rejected')),
+  verification_note text,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
 );
 
-create index if not exists players_status_created_idx on public.players(status, created_at desc);
-create index if not exists players_province_idx on public.players(province);
-create index if not exists players_stage_idx on public.players(stage);
+create index if not exists players_status_idx on public.players(status);
+create index if not exists players_name_idx on public.players using gin (to_tsvector('simple', name));
 
 alter table public.players enable row level security;
--- Pengunjung hanya dapat membaca profil yang sudah dipublikasikan.
-drop policy if exists "Public can read published players" on public.players;
-create policy "Public can read published players" on public.players
-  for select to anon, authenticated using (status = 'published');
--- Opsi untuk server yang memakai anon key: publik hanya boleh mengirim kontribusi pending.
--- Jika backend memakai service_role key, key tersebut melewati RLS dan tidak boleh bocor ke browser.
-drop policy if exists "Public can submit pending players" on public.players;
-create policy "Public can submit pending players" on public.players
-  for insert to anon, authenticated with check (status = 'pending' and consent = true);
--- Tidak ada policy update/delete untuk publik. Admin server harus memakai service_role key.
+
+-- Public can only read published players.
+drop policy if exists "public_read_published_players" on public.players;
+create policy "public_read_published_players"
+on public.players for select
+to anon, authenticated
+using (status = 'published');
+
+-- Public contribution insert: only pending records.
+drop policy if exists "public_submit_player" on public.players;
+create policy "public_submit_player"
+on public.players for insert
+to anon, authenticated
+with check (status = 'pending');
+
+-- Updates/deletes should be performed by the server using the secret/service key,
+-- not directly from the browser.
