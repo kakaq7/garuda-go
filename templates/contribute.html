@@ -6,7 +6,7 @@
 <div class="form-grid"><label>Nama pemain *<input name="full_name" value="{{form.get('full_name','')}}" required></label><label>Tahun lahir<input type="number" name="birth_year" min="1900" max="2100" value="{{form.get('birth_year','')}}"></label>
 <label>Kelompok usia *<select name="age_group" required><option value="">Pilih</option>{% for x in ['U-8','U-10','U-12','U-14','U-16','U-18','U-20','Senior'] %}<option {% if form.get('age_group')==x %}selected{% endif %}>{{x}}</option>{% endfor %}</select></label>
 <label>Posisi *<select name="position" required><option value="">Pilih</option>{% for x in ['Kiper','Bek','Gelandang','Penyerang'] %}<option {% if form.get('position')==x %}selected{% endif %}>{{x}}</option>{% endfor %}</select></label>
-<label>Kota/Kabupaten<input name="city" value="{{form.get('city','')}}"></label><label>Provinsi *<input name="province" value="{{form.get('province','')}}" required></label>
+<label>Kota/Kabupaten<input name="city" value="{{form.get('city','')}}"></label><label>Provinsi *<select name="province" required><option value="">Pilih provinsi</option>{% for x in provinces %}<option value="{{x}}" {% if form.get('province')==x %}selected{% endif %}>{{x}}</option>{% endfor %}</select></label>
 <label>Klub/Akademi<input name="club_name" value="{{form.get('club_name','')}}"></label><label>URL foto publik<input type="url" name="photo_url" value="{{form.get('photo_url','')}}" placeholder="https://…"></label>
 <label class="wide">Biografi singkat<textarea name="short_bio" rows="4">{{form.get('short_bio','')}}</textarea></label>
 <label class="wide">Sumber informasi / referensi<input type="url" name="source_url" value="{{form.get('source_url','')}}" placeholder="https://…"></label>

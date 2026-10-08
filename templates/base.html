@@ -28,7 +28,7 @@
           <span class="user-chip">{{ current_user.display_name }}</span>
           <a href="{{ url_for('logout') }}">Keluar</a>
         {% else %}
-          <a href="{{ url_for('login') }}">Masuk</a>
+          <a class="nav-auth-link" href="{{ url_for('login') }}">Login</a>
           <a class="btn btn-small" href="{{ url_for('register') }}">Daftar</a>
         {% endif %}
       </div>
