@@ -1,7 +1,64 @@
-{% extends 'base.html' %}{% block title %}Beranda{% endblock %}{% block content %}
-<section class="hero"><div class="hero-grid container"><div class="hero-copy"><div class="eyebrow"><span class="eyebrow-line"></span> EKOSISTEM TALENTA SEPAK BOLA NASIONAL</div><h1>Talenta hebat.<br><em>Masa depan</em><br>sepak bola Indonesia.</h1><p class="hero-lead">Satu ruang untuk menemukan, mengenali, dan mendukung perjalanan pemain sepak bola Indonesia — dari lapangan kampung hingga panggung tertinggi.</p><div class="hero-actions"><a class="btn btn-lime" href="{{ url_for('players_page') }}">Jelajahi database <span>↗</span></a><a class="btn btn-outline" href="{{ url_for('contribute') }}"><span class="plus-icon">＋</span> Bagikan informasi</a></div><div class="hero-trust"><div class="avatar-stack"><span>✦</span><span>⚽</span><span>↗</span><b>+</b></div><div><strong>Dari komunitas, untuk Indonesia</strong><small>Scout · Pelatih · Orang tua · Suporter</small></div></div></div><div class="hero-visual"><div class="visual-orbit orbit-one"></div><div class="visual-orbit orbit-two"></div><div class="pitch-lines"><span></span><i></i><b></b></div><div class="visual-number">01<span>/ TALENTA</span></div><div class="hero-ball">⚽</div><div class="floating-card card-top"><span class="mini-icon">↗</span><div><small>Perjalanan pemain</small><strong>Usia dini → Senior</strong></div></div><div class="floating-card card-bottom"><div class="verified-icon">✓</div><div><small>Setiap data melalui</small><strong>Verifikasi komunitas</strong></div></div><div class="visual-caption">MEREKAM POTENSI.<br>MENUMBUHKAN HARAPAN.</div></div></div><div class="hero-bottom container"><span>SEBUAH EKOSISTEM TERBUKA</span><span class="hero-bottom-line"></span><span>01 — 34 PROVINSI — SATU TUJUAN</span></div></section>
-<section class="stats-section"><div class="container stats-grid"><div class="stats-intro"><span class="section-kicker">GAMBARAN EKOSISTEM</span><p>Potensi ada di mana-mana. Mari bantu membuatnya terlihat.</p></div><div class="stat"><strong>{{ stats.players }}<span>+</span></strong><small>Profil pemain</small></div><div class="stat"><strong>{{ stats.provinces }}<span></span></strong><small>Provinsi terwakili</small></div><div class="stat"><strong>{{ stats.stages }}<span></span></strong><small>Fase pembinaan</small></div></div><p class="container demo-note">{% if not db_connected %}Mode pratinjau: data contoh ditampilkan. Hubungkan Supabase untuk data persisten.{% else %}Data publik yang telah melewati proses verifikasi admin.{% endif %}</p></section>
-<section class="section container"><div class="section-heading"><div><span class="section-kicker">SOROTAN TALENTA</span><h2>Kenali pemain.<br><em>Ikuti potensinya.</em></h2></div><a class="text-link" href="{{ url_for('players_page') }}">Lihat semua pemain <span>↗</span></a></div><div class="player-grid">{% for p in players %}<a class="player-card" href="{{ url_for('player_detail', player_id=p.id) }}"><div class="player-card-top"><span class="stage-tag">{{ p.stage or 'Pemain' }}</span><span class="card-arrow">↗</span><div class="player-illustration ill-{{ loop.index0 % 4 }}"><span>{{ (p.name or 'P')[0]|upper }}</span><div class="illustration-ring"></div></div><span class="player-number">TALENTA / {{ '%02d'|format(loop.index) }}</span></div><div class="player-info"><div class="player-position">{{ p.position or 'Posisi belum diisi' }} <span>·</span> {{ p.province or 'Indonesia' }}</div><h3>{{ p.name }}</h3><p>{{ p.club or 'Klub belum dicantumkan' }}</p><div class="player-card-foot"><span>Usia {{ p.age or '—' }} tahun</span><span class="verified-label"><i>✓</i> Terverifikasi</span></div></div></a>{% else %}<div class="empty-state">Belum ada profil pemain yang dipublikasikan. Jadilah kontributor pertama!</div>{% endfor %}</div></section>
-<section class="path-section"><div class="container"><div class="section-heading light-heading"><div><span class="section-kicker">PERJALANAN PEMBINAAN</span><h2>Dari langkah pertama<br>hingga <em>level tertinggi.</em></h2></div><p>Perjalanan setiap pemain berbeda. Bangun gambaran utuh pembinaan sepak bola melalui data yang inklusif dan berkelanjutan.</p></div><div class="path-grid"><div class="path-item"><span class="path-index">01</span><div class="path-symbol">◉</div><h3>Usia dini</h3><p>Menemukan minat, potensi, dan fondasi teknik sejak awal.</p><span class="path-age">U-8 — U-12</span></div><div class="path-item"><span class="path-index">02</span><div class="path-symbol">⌁</div><h3>Pengembangan</h3><p>Mendukung proses belajar dan kompetisi di usia remaja.</p><span class="path-age">U-13 — U-16</span></div><div class="path-item"><span class="path-index">03</span><div class="path-symbol">↗</div><h3>Elite muda</h3><p>Memetakan kesiapan menuju level kompetitif yang lebih tinggi.</p><span class="path-age">U-17 — U-20</span></div><div class="path-item"><span class="path-index">04</span><div class="path-symbol">✳</div><h3>Senior</h3><p>Mendokumentasikan perjalanan profesional dan pengalaman.</p><span class="path-age">U-21+</span></div></div></div></section>
-<section class="contribute-banner container"><div class="banner-orb"></div><div class="banner-content"><span class="section-kicker">SATU INFORMASI BISA BERARTI</span><h2>Talenta di sekitar Anda<br>layak <em>diketahui dunia.</em></h2><p>Kenal pemain berbakat? Punya informasi akademi, pelatih, atau perjalanan pemain? Bantu lengkapi peta talenta Indonesia.</p><a href="{{ url_for('contribute') }}" class="btn btn-dark">Mulai berkontribusi <span>↗</span></a></div><div class="banner-side"><span class="banner-star">✳</span><span>SUARA KOMUNITAS<br>MEMBANGUN MASA DEPAN</span><span class="banner-line"></span><span class="banner-small">Informasi ditinjau admin<br>sebelum dipublikasikan.</span></div></section>
+{% extends "base.html" %}
+{% block title %}Daftar Data{% endblock %}
+
+{% block content %}
+<div class="header">
+    <div>
+        <h1>CRUD Items</h1>
+        <p class="muted">Flask + Supabase + Vercel</p>
+    </div>
+</div>
+
+<section class="card">
+    <h2>Tambah Data</h2>
+    <form method="post" action="{{ url_for('create') }}" class="form">
+        <label>
+            Nama
+            <input type="text" name="name" placeholder="Contoh: Produk A" required>
+        </label>
+        <label>
+            Deskripsi
+            <textarea name="description" placeholder="Deskripsi singkat"></textarea>
+        </label>
+        <button type="submit">Tambah</button>
+    </form>
+</section>
+
+<section class="card">
+    <h2>Data</h2>
+    {% if items %}
+    <div class="table-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Nama</th>
+                    <th>Deskripsi</th>
+                    <th>Dibuat</th>
+                    <th>Aksi</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for item in items %}
+                <tr>
+                    <td>{{ item.id }}</td>
+                    <td>{{ item.name }}</td>
+                    <td>{{ item.description }}</td>
+                    <td>{{ item.created_at }}</td>
+                    <td class="actions">
+                        <a class="button secondary" href="{{ url_for('edit', item_id=item.id) }}">Edit</a>
+                        <form method="post" action="{{ url_for('delete', item_id=item.id) }}"
+                              onsubmit="return confirm('Hapus data ini?')">
+                            <button class="danger" type="submit">Hapus</button>
+                        </form>
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+        <p class="muted">Belum ada data.</p>
+    {% endif %}
+</section>
 {% endblock %}

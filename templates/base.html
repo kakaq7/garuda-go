@@ -1,24 +1,22 @@
 <!doctype html>
 <html lang="id">
 <head>
-  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#092b24"><meta name="description" content="Garuda Talenta — kolaborasi nasional untuk pembinaan pemain sepak bola Indonesia dari usia dini hingga senior.">
-  <title>{% block title %}Garuda Talenta{% endblock %} — Sistem Pembinaan Sepak Bola Indonesia</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-  <script defer src="{{ url_for('static', filename='js/main.js') }}"></script>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}CRUD Flask + Supabase{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
-  <div class="announcement"><span class="pulse"></span> Ruang kolaborasi sepak bola Indonesia <span class="announcement-right">Data terverifikasi · Untuk masa depan</span></div>
-  <header class="site-header"><div class="container nav-wrap">
-    <a class="brand" href="{{ url_for('index') }}" aria-label="Garuda Talenta beranda"><span class="brand-mark">G<span>+</span></span><span class="brand-copy">GARUDA<span>TALENTA</span></span></a>
-    <button class="nav-toggle" aria-label="Buka navigasi" aria-expanded="false"><span></span><span></span><span></span></button>
-    <nav class="main-nav" aria-label="Navigasi utama"><a href="{{ url_for('index') }}" class="{% if request.endpoint == 'index' %}active{% endif %}">Beranda</a><a href="{{ url_for('players_page') }}" class="{% if request.endpoint in ['players_page','player_detail'] %}active{% endif %}">Jelajahi pemain</a><a href="{{ url_for('about') }}">Tentang kami</a><a class="nav-cta" href="{{ url_for('contribute') }}">Kirim kontribusi <span>↗</span></a></nav>
-  </div></header>
-  <main>
-    <div class="container flash-wrap">{% with messages = get_flashed_messages(with_categories=true) %}{% if messages %}{% for category, message in messages %}<div class="flash flash-{{ category }}" role="status">{{ message }}<button class="flash-close" aria-label="Tutup pesan">×</button></div>{% endfor %}{% endif %}{% endwith %}</div>
-    {% block content %}{% endblock %}
-  </main>
-  <footer class="site-footer"><div class="container footer-top"><div><a class="brand footer-brand" href="{{ url_for('index') }}"><span class="brand-mark">G<span>+</span></span><span class="brand-copy">GARUDA<span>TALENTA</span></span></a><p>Setiap talenta berhak mendapat kesempatan.<br>Bangun masa depan sepak bola Indonesia bersama.</p></div><div class="footer-links"><div><b>Jelajahi</b><a href="{{ url_for('players_page') }}">Database pemain</a><a href="{{ url_for('contribute') }}">Kirim kontribusi</a><a href="{{ url_for('about') }}">Tentang platform</a></div><div><b>Transparansi</b><a href="{{ url_for('about') }}#verifikasi">Proses verifikasi</a><a href="{{ url_for('about') }}#privasi">Privasi & keamanan</a><a href="{{ url_for('admin_login') }}">Akses admin</a></div></div></div><div class="container footer-bottom"><span>© {{ current_year }} Garuda Talenta. Dibangun untuk sepak bola Indonesia.</span><span><i class="footer-dot"></i> Kolaboratif · Terverifikasi · Inklusif</span></div></footer>
-</body></html>
+    <main class="container">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert {{ category }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        {% block content %}{% endblock %}
+    </main>
+</body>
+</html>
