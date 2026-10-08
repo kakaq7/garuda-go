@@ -15,6 +15,20 @@ if not SUPABASE_URL or not SUPABASE_KEY:
 
 supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 
+INDONESIA_PROVINCES = [
+    "Aceh", "Sumatera Utara", "Sumatera Barat", "Riau",
+    "Jambi", "Sumatera Selatan", "Bengkulu", "Lampung",
+    "Kepulauan Bangka Belitung", "Kepulauan Riau", "DKI Jakarta",
+    "Jawa Barat", "Jawa Tengah", "DI Yogyakarta", "Jawa Timur",
+    "Banten", "Bali", "Nusa Tenggara Barat", "Nusa Tenggara Timur",
+    "Kalimantan Barat", "Kalimantan Tengah", "Kalimantan Selatan",
+    "Kalimantan Timur", "Kalimantan Utara", "Sulawesi Utara",
+    "Sulawesi Tengah", "Sulawesi Selatan", "Sulawesi Tenggara",
+    "Gorontalo", "Sulawesi Barat", "Maluku", "Maluku Utara",
+    "Papua Barat", "Papua Barat Daya", "Papua", "Papua Selatan",
+    "Papua Tengah", "Papua Pegunungan",
+]
+
 def admin_client():
     if not SUPABASE_SERVICE_ROLE_KEY:
         raise RuntimeError("SUPABASE_SERVICE_ROLE_KEY wajib diatur untuk fitur admin.")
@@ -81,6 +95,7 @@ def players():
         "players.html",
         players=result.data or [],
         filters={"q": q, "province": province, "position": position, "age_group": age_group},
+        provinces=INDONESIA_PROVINCES,
     )
 
 @app.route("/pemain/<slug>")
@@ -139,6 +154,27 @@ def register():
             flash(f"Registrasi gagal: {str(exc)}", "danger")
     return render_template("register.html")
 
+@app.route("/lupa-password", methods=["GET", "POST"])
+def forgot_password():
+    if request.method == "POST":
+        email = request.form.get("email", "").strip()
+        if not email:
+            flash("Silakan masukkan email akun Anda.", "warning")
+            return render_template("forgot_password.html")
+        try:
+            redirect_to = url_for("reset_password", _external=True)
+            supabase.auth.reset_password_for_email(email, {"redirect_to": redirect_to})
+            flash("Jika email tersebut terdaftar, tautan reset password telah dikirim. Silakan cek inbox atau folder spam.", "success")
+            return redirect(url_for("login"))
+        except Exception:
+            # Jangan membocorkan apakah sebuah email terdaftar atau tidak.
+            flash("Permintaan reset password tidak dapat diproses saat ini. Silakan coba lagi.", "danger")
+    return render_template("forgot_password.html")
+
+@app.route("/reset-password")
+def reset_password():
+    return render_template("reset_password.html", supabase_url=SUPABASE_URL, supabase_key=SUPABASE_KEY)
+
 @app.route("/logout")
 def logout():
     try:
@@ -170,14 +206,14 @@ def contribute():
         }
         if not data["full_name"] or not data["age_group"] or not data["position"] or not data["province"]:
             flash("Nama, kelompok usia, posisi, dan provinsi wajib diisi.", "warning")
-            return render_template("contribute.html", form=data)
+            return render_template("contribute.html", form=data, provinces=INDONESIA_PROVINCES)
         try:
             supabase.table("players").insert(data).execute()
             flash("Kontribusi berhasil dikirim dan menunggu verifikasi admin.", "success")
             return redirect(url_for("my_contributions"))
         except Exception as exc:
             flash(f"Gagal mengirim kontribusi: {str(exc)}", "danger")
-    return render_template("contribute.html", form={})
+    return render_template("contribute.html", form={}, provinces=INDONESIA_PROVINCES)
 
 @app.route("/kontribusi-saya")
 @login_required
