@@ -19,11 +19,32 @@ app.config['SESSION_COOKIE_SECURE'] = bool(os.getenv('VERCEL'))
 SUPABASE_URL = os.getenv('SUPABASE_URL', '').strip()
 SUPABASE_KEY = os.getenv('SUPABASE_KEY', '').strip()
 _db = None
-if create_client and SUPABASE_URL and SUPABASE_KEY:
+DB_ERROR = None
+
+def require_db():
+    if _db is None:
+        raise RuntimeError(DB_ERROR or "Database Supabase tidak tersedia.")
+    return _db
+
+def init_supabase():
+    global _db, DB_ERROR
     try:
-        _db = create_client(SUPABASE_URL, SUPABASE_KEY)
-    except Exception:
+        from supabase import create_client
+        url = os.environ.get("SUPABASE_URL", "").strip()
+        key = os.environ.get("SUPABASE_KEY", "").strip()
+        if not url or not key:
+            DB_ERROR = "SUPABASE_URL atau SUPABASE_KEY belum dikonfigurasi."
+            _db = None
+            return
+        _db = create_client(url, key)
+        # Lightweight connection/query check. The table is expected to exist.
+        _db.table("players").select("id").limit(1).execute()
+        DB_ERROR = None
+    except Exception as exc:
         _db = None
+        DB_ERROR = str(exc)
+
+init_supabase()
 
 # Demonstration content is used only when Supabase is not configured/reachable.
 DEMO_PLAYERS = [
@@ -100,6 +121,28 @@ def admin_required(fn):
             return redirect(url_for('admin_login', next=request.path))
         return fn(*args, **kwargs)
     return wrapped
+
+
+
+@app.get("/health")
+def health():
+    configured = bool(os.environ.get("SUPABASE_URL", "").strip() and os.environ.get("SUPABASE_KEY", "").strip())
+    connection = False
+    error = DB_ERROR
+    if _db is not None:
+        try:
+            _db.table("players").select("id").limit(1).execute()
+            connection = True
+            error = None
+        except Exception as exc:
+            error = str(exc)
+    status = "ok" if configured and connection else "error"
+    return jsonify({
+        "status": status,
+        "database_configured": configured,
+        "database_connection": connection,
+        "database_error": error
+    }), (200 if status == "ok" else 503)
 
 
 @app.context_processor

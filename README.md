@@ -98,3 +98,20 @@ Buka `http://127.0.0.1:5000`. Flask tidak membaca `.env` secara otomatis dalam k
 - `/admin/masuk` — Login admin
 - `/admin` — Antrean verifikasi (login diperlukan)
 - `/health` — Status aplikasi dan konfigurasi database
+
+
+## Diagnostik Supabase
+
+Set these Vercel Production environment variables:
+
+- `SUPABASE_URL`
+- `SUPABASE_KEY`
+- `FLASK_SECRET_KEY`
+- `ADMIN_USERNAME`
+- `ADMIN_PASSWORD_HASH`
+
+After deployment, open `/health`. A healthy response has:
+
+`"status": "ok"`, `"database_configured": true`, and `"database_connection": true`.
+
+The application no longer falls back to in-memory/demo data when Supabase is unavailable. A failed database write returns an error instead of claiming the data was saved.
