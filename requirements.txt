@@ -1,3 +1,6 @@
 Flask==3.1.2
-supabase==2.20.0
+# Keep the Supabase packages on the same release line.
+# This avoids incompatible/yanked supabase_auth combinations.
+supabase==2.32.0
+supabase-auth==2.32.0
 gunicorn==23.0.0
